@@ -1,0 +1,3 @@
+[submodule "Library/RawDiskLib"]
+	path = Library/RawDiskLib
+	url = https://github.com/LordMike/RawDiskLib.git
