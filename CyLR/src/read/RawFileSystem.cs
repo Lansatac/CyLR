@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using DiscUtils;
 using DiscUtils.Ntfs;
 using RawDiskLib;
-
 using IRawFileSystem = DiscUtils.IFileSystem;
 
 namespace CyLR.read
@@ -11,36 +12,11 @@ namespace CyLR.read
     internal class RawFileSystem : IFileSystem
     {
         private readonly Dictionary<char, IRawFileSystem> systems = new Dictionary<char, IRawFileSystem>();
-        
-        IRawFileSystem GetSystem(string path)
-        {
-            IRawFileSystem system;
-            var driveLetter = path[0];
-            
-            if (!char.IsLetter(driveLetter))
-            {
-                throw new ArgumentException($"Path '{path}' did not have a drive letter!");
-            }
-
-            if (systems.TryGetValue(driveLetter, out system)) return system;
-
-            var disk = new RawDisk(driveLetter);
-            var rawDiskStream = disk.CreateDiskStream();
-            system = new NtfsFileSystem(rawDiskStream);
-            systems.Add(driveLetter, system);
-            return system;
-        }
-
-        string FullPathToRawPath(string path)
-        {
-            return path.Substring(3); //chop off drive letter and leading slash
-        }
 
         public IEnumerable<string> GetFilesFromPath(string path)
         {
             var system = GetSystem(path);
             var letterlessPath = FullPathToRawPath(path);
-            
 
             if (system.FileExists(letterlessPath))
             {
@@ -48,18 +24,12 @@ namespace CyLR.read
             }
             else if (system.DirectoryExists(letterlessPath))
             {
-                if (system.GetFiles(letterlessPath).Length > 0)
+                var dirInfo = system.GetDirectoryInfo(letterlessPath);
+                // Grap all files in directory
+                foreach (var file in GetFilesFromDir(path, dirInfo))
                 {
-                    foreach (var fileInfo in system.GetDirectoryInfo(letterlessPath).GetFiles())
-                    {
-                        yield return Path.Combine(path, fileInfo.Name);
-                    }
+                    yield return file;
                 }
-                else
-                {
-                    Console.WriteLine($"Folder '{path}' exists but contains no files");
-                }
-
             }
             else
             {
@@ -86,6 +56,58 @@ namespace CyLR.read
         {
             var system = GetSystem(path);
             return system.OpenFile(FullPathToRawPath(path), FileMode.Open, FileAccess.Read);
+        }
+
+        private IRawFileSystem GetSystem(string path)
+        {
+            IRawFileSystem system;
+            var driveLetter = path[0];
+
+            if (!char.IsLetter(driveLetter))
+            {
+                throw new ArgumentException($"Path '{path}' did not have a drive letter!");
+            }
+
+            if (systems.TryGetValue(driveLetter, out system)) return system;
+
+            try
+            {
+                var disk = new RawDisk(driveLetter);
+                var rawDiskStream = disk.CreateDiskStream();
+                system = new NtfsFileSystem(rawDiskStream);
+                systems.Add(driveLetter, system);
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Failed to create a filesystem for drive '{0}'", driveLetter);
+                throw;
+            }
+            return system;
+        }
+
+        private string FullPathToRawPath(string path)
+        {
+            return path.Substring(3); //chop off drive letter and leading slash
+        }
+
+        private IEnumerable<string> GetFilesFromDir(string path, DiscDirectoryInfo directory)
+        {
+            foreach (var subDir in directory.GetDirectories())
+            {
+                foreach (var file in GetFilesFromDir(Path.Combine(path, subDir.Name), subDir))
+                {
+                    yield return file;
+                }
+            }
+            var fileList = directory.GetFiles();
+            if (!fileList.Any())
+            {
+                Console.WriteLine($"Folder '{path}' exists but contains no files");
+            }
+            foreach (var file in fileList)
+            {
+                yield return Path.Combine(path, file.Name);
+            }
         }
     }
 }

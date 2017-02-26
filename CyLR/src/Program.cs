@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Principal;
 using CyLR.archive;
 using CyLR.read;
 using Renci.SshNet;
 using ArchiveFile = CyLR.archive.File;
 using File = System.IO.File;
+
 
 namespace CyLR
 {
@@ -37,12 +39,25 @@ namespace CyLR
                 return 0;
             }
 
+            if (!arguments.ForceNative)
+            {
+                var identity = WindowsIdentity.GetCurrent();
+                var principal = new WindowsPrincipal(identity);
+                if (!principal.IsInRole(WindowsBuiltInRole.Administrator))
+                {
+                    Console.WriteLine(
+                        "Error, this program requires admin privliages to run unless --force-native is specified.");
+                    return 1;
+                }
+            }
+
             var additionalPaths = new List<string>();
             if (Platform.IsInputRedirected)
             {
                 string input = null;
                 while ((input = Console.ReadLine()) != null)
                 {
+                    input = Environment.ExpandEnvironmentVariables(input);
                     additionalPaths.Add(input);
                 }
             }
@@ -104,7 +119,7 @@ namespace CyLR
         private static void CreateArchive(Arguments arguments, Stream archiveStream, IEnumerable<string> paths)
         {
 #if DOT_NET_4_0
-            using (var archive = new SharpZipArchive(archiveStream))
+            using (var archive = new SharpZipArchive(archiveStream, arguments.ZipPassword))
 #else
             using (var archive = new NativeArchive(archiveStream))
 #endif
