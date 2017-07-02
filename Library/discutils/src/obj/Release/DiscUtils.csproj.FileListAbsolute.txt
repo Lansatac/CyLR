@@ -1,0 +1,8 @@
+C:\Users\Jason\Documents\code\CyLR\Library\discutils\src\bin\Release\DiscUtils.dll
+C:\Users\Jason\Documents\code\CyLR\Library\discutils\src\bin\Release\DiscUtils.pdb
+C:\Users\Jason\Documents\code\CyLR\Library\discutils\src\bin\Release\DiscUtils.dll.xml
+C:\Users\Jason\Documents\code\CyLR\Library\discutils\src\obj\Release\DiscUtils.csprojResolveAssemblyReference.cache
+C:\Users\Jason\Documents\code\CyLR\Library\discutils\src\obj\Release\DiscUtils.Resources.resources
+C:\Users\Jason\Documents\code\CyLR\Library\discutils\src\obj\Release\DiscUtils.csproj.GenerateResource.Cache
+C:\Users\Jason\Documents\code\CyLR\Library\discutils\src\obj\Release\DiscUtils.dll
+C:\Users\Jason\Documents\code\CyLR\Library\discutils\src\obj\Release\DiscUtils.pdb

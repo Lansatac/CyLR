@@ -83,14 +83,6 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DiscUtils, Version=0.11.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Discutils.0.11.0.2\lib\net40\DiscUtils.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="DiscUtils.Common, Version=0.11.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Discutils.0.11.0.2\lib\net40\DiscUtils.Common.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Renci.SshNet, Version=2016.0.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
       <HintPath>..\packages\SSH.NET.2016.0.0\lib\net40\Renci.SshNet.dll</HintPath>
       <Private>True</Private>
@@ -150,6 +142,14 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Library\discutils\src\DiscUtils.csproj">
+      <Project>{dbb340f9-2386-43c2-a473-fa496cbe07a4}</Project>
+      <Name>DiscUtils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Library\discutils\utils\DiscUtils.Common\DiscUtils.Common.csproj">
+      <Project>{40f44fcf-5c77-404d-82bd-9e17bda5e04b}</Project>
+      <Name>DiscUtils.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Library\RawDiskLib\DeviceIOControlLib\DeviceIOControlLib\DeviceIOControlLib.csproj">
       <Project>{303f50c6-4ebb-45c5-bfea-f5f39caf0410}</Project>
       <Name>DeviceIOControlLib</Name>
