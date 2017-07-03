@@ -7,3 +7,6 @@ packages/
 *.opendb
 CyLRTests/obj/
 CyLRTests/bin/
+Library/discutils/src/bin/
+Library/discutils/src/obj/
+Library/discutils/utils/DiscUtils.Common/obj/

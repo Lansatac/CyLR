@@ -825,6 +825,7 @@ namespace DiscUtils
         {
             int totalRead = 0;
             int numRead = stream.Read(buffer, offset, length);
+            System.Diagnostics.Debug.Assert(numRead <= length);
             while (numRead > 0)
             {
                 totalRead += numRead;
